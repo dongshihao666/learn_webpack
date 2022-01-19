@@ -3,10 +3,40 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin') // 基于webpack5
 
 const CssminiMizerWebpackPlugin = require('css-minimizer-webpack-plugin')
+
+const toml = require('toml')
+const yaml = require('yaml')
+const json5 = require('json5')
+ 
+// 多入口文件导致会把引入的文件分别打包到各自的js
+
 module.exports = {
-  entry: './src/index.js',
-  output: {
-    filename: 'bundle.js' ,
+  // entry: './src/index.js',
+  // entry: { // 多入口
+  //   index: './src/index.js',
+  //   another: './src/another-modules.js'
+  // },
+  // entry: { // 多入口
+    // index: {
+    //   import: './src/index.js',
+    //   dependOn: 'shared'
+    // },
+    // another: {
+    //   import: './src/another-modules.js',
+    //   dependOn: 'shared'
+    // },
+    // shared: 'lodash' // 将loash抽离，并命名shared
+  // },
+  entry: { // 多入口
+    index: './src/index.js',
+    another: './src/another-modules.js'
+  },
+  // entry: { // 多入口
+  //   index: './src/index.js',
+  // },
+  output: { 
+    // filename: 'bundle.js' ,
+    filename: 'js/[name].bundle.js',
     path: path.resolve(__dirname, './dist'),
     clean: true,
     assetModuleFilename: 'images/[contenthash][ext]'
@@ -18,7 +48,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './index.html',
-      filename: 'app.html',
+      filename: 'index.html',
       inject: 'body' // 打包到哪个标签
     }),
 
@@ -30,7 +60,11 @@ module.exports = {
   optimization: { // 优化项写这里
     minimizer: [
       new CssminiMizerWebpackPlugin()
-    ]
+    ],
+
+    splitChunks: { // webpack内置插件，抽离多文件公共资源
+      chunks: 'all'
+    } 
   },
 
   devServer: {
@@ -87,6 +121,42 @@ module.exports = {
         test: /\.(xml)/,
         use: ['xml-loader'], //  先通过 lessloader cssloader 识别处理css文件  再通过style-loader放入文件中 
         
+      },
+      {
+        test: /\.toml$/,
+        type: 'json',
+        parser: {
+          parse: toml.parse
+        }
+      },
+      {
+        test: /\.yaml$/,
+        type: 'json',
+        parser: {
+          parse: yaml.parse
+        }
+      },
+      {
+        test: /\.json5$/,
+        type: 'json',
+        parser: {
+          parse: json5.parse
+        }
+      },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env'],
+            plugins: [
+              [
+                '@babel/plugin-transform-runtime'
+              ]
+            ]
+          }
+        }
       }
     ]
   }

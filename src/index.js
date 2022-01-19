@@ -7,8 +7,12 @@ import atxt from './assets/a.txt'
 import './style.css'
 import './style.less'
 
-console.log(hello)
-console.log(imgsrc)
+import _ from 'lodash'
+
+import './async-module'
+
+console.log(hello())
+console.log(imgsrc) 
 
 const img = document.createElement('img')
 img.src = imgsrc
@@ -32,3 +36,17 @@ const img3 = document.createElement('img')
 img3.style.cssText = 'width: 600px; height: 200px'
 img3.src = bgIndex
 document.body.appendChild(img3) 
+
+
+console.log(_.join(['1', '2', '3'], '!'))
+
+
+
+const button = document.createElement('button')
+button.textContent = '点击加法运算'
+button.addEventListener('click', () => {
+  import(/* webpackChunkName: 'math' */'./math.js').then(({ add }) => {
+    console.log(add(4, 5))
+  })
+})
+document.body.appendChild(button)
