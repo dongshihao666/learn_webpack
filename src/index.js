@@ -44,9 +44,14 @@ console.log(_.join(['1', '2', '3'], '!'))
 
 const button = document.createElement('button')
 button.textContent = '点击加法运算'
+
+// webpackPrefetch 预加载
+// webpackChunkName 打包之后名称
+// webpackPrefetch 用到在加载类似懒加载
+
 button.addEventListener('click', () => {
-  import(/* webpackChunkName: 'math' */'./math.js').then(({ add }) => {
+  import(/* webpackChunkName: 'math', webpackPreload: true */'./math.js').then(({ add }) => {
     console.log(add(4, 5))
   })
-})
-document.body.appendChild(button)
+}) 
+document.body.appendChild(button) 

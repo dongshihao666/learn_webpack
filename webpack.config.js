@@ -36,7 +36,7 @@ module.exports = {
   // },
   output: { 
     // filename: 'bundle.js' ,
-    filename: 'js/[name].bundle.js',
+    filename: 'js/[name].[contenthash].js',
     path: path.resolve(__dirname, './dist'),
     clean: true,
     assetModuleFilename: 'images/[contenthash][ext]'
@@ -63,7 +63,14 @@ module.exports = {
     ],
 
     splitChunks: { // webpack内置插件，抽离多文件公共资源
-      chunks: 'all'
+      // chunks: 'all'
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all'  // 抽离公共资源，通过浏览器缓存机制缓存
+        }
+      }
     } 
   },
 
